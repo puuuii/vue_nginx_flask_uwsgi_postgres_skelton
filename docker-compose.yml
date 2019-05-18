@@ -1,0 +1,20 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+  uwsgi:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3031:3031"
+    environment:
+      TZ: "Asia/Tokyo"
+  nginx:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8080:80"
