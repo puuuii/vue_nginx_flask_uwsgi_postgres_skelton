@@ -14,12 +14,11 @@
     <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
         <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
-        <script src="../static/js/script.js" defer></script>
+        <script src="/static/js/script.js" defer></script>
         <title></title>
     </head>
     <body>
@@ -46,12 +45,16 @@
 
     ```conf
     server {
-        listen       80;
-        server_name  localhost;
+        listen      80;
+        server_name localhost;
 
         location / {
             root   /app/templates;
             index  index.html index.htm;
+        }
+
+        location /static {
+            alias /app/static/;
         }
 
         error_page   500 502 503 504  /50x.html;
@@ -136,27 +139,28 @@
 
 1. プロジェクトルート直下に `docker-compose.yml` 作成
 
-   ```docker-compose
-   version: '3'
-   services:
-     db:
-       image: postgres
-       ports:
-         - "5432:5432"
-     uwsgi:
-       build: ./backend
-       volumes:
-         - ./backend:/app
-       ports:
-         - "3031:3031"
-       environment:
-         TZ: "Asia/Tokyo"
-     nginx:
-       build: ./frontend
-       volumes:
-         - ./frontend:/app
-       ports:
-         - "8080:80"
-   ```
+    ```docker-compose
+    version: '3'
+    services:
+      db:
+        image: postgres
+        ports:
+          - "5432:5432"
+      uwsgi:
+        build: ./backend
+        volumes:
+          - ./backend:/app
+        ports:
+          - "3031:3031"
+        environment:
+          TZ: "Asia/Tokyo"
+      nginx:
+        build: ./frontend
+        volumes:
+          - ./frontend:/app
+          - ./frontend/default.conf:/etc/nginx/conf.d/default.conf
+        ports:
+          - "8080:80"
+    ```
 
 2. `docker-compose build`
