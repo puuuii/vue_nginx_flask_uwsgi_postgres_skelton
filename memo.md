@@ -160,6 +160,10 @@
         image: postgres
         ports:
           - "5432:5432"
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          # POSTGRES_DB: db_name
         container_name: db
       uwsgi:
         build: ./backend
@@ -180,6 +184,8 @@
         depends_on:
           - uwsgi
         container_name: nginx
+        environment:
+          TZ: "Asia/Tokyo"
     ```
 
 2. `docker-compose build`
