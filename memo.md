@@ -59,6 +59,10 @@
             alias /app/static/;
         }
 
+        location /favicon.ico {
+            alias /app/static/resources/favicon.ico;
+        }
+
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
             root   /usr/share/nginx/html;
@@ -84,21 +88,29 @@
 3. backendディレクトリ内にflask起動スクリプト `main.py` 作成
 
    ```python
-   #!/usr/bin/env python
-   # -*- coding: utf-8 -*-
+    #!/usr/bin/env python
+    # -*- coding: utf-8 -*-
 
-   from flask import Flask, jsonify
+    from flask import Flask, jsonify
 
-   app = Flask(__name__)
-
-
-   @app.route("/api")
-   def api():
-       return jsonify({'key': 'value'})
+    app = Flask(__name__)
 
 
-   if __name__ == "__main__":
-       app.run()
+    @app.after_request
+    def after_request(response):
+      response.headers.add('Access-Control-Allow-Origin', '*')
+      response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+      response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+      return response
+
+
+    @app.route("/api")
+    def api():
+        return jsonify({'key': 'value'})
+
+
+    if __name__ == "__main__":
+        app.run()
    ```
 
 4. backendディレクトリ内に `requirements.txt` 作成
@@ -148,6 +160,7 @@
         image: postgres
         ports:
           - "5432:5432"
+        container_name: db
       uwsgi:
         build: ./backend
         volumes:
@@ -156,6 +169,7 @@
           - "3031:3031"
         environment:
           TZ: "Asia/Tokyo"
+        container_name: uwsgi
       nginx:
         build: ./frontend
         volumes:
@@ -163,6 +177,9 @@
           - ./frontend/default.conf:/etc/nginx/conf.d/default.conf
         ports:
           - "8080:80"
+        depends_on:
+          - uwsgi
+        container_name: nginx
     ```
 
 2. `docker-compose build`
