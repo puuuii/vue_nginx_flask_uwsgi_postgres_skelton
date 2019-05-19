@@ -41,7 +41,9 @@
 
 7. `frontend/static/css`ディレクトリ作成
 8. `frontend/static/css/style.css`ファイル作成（空）
-9. `frontend/default.conf`ファイル作成
+9. `frontend/static/resources`ディレクトリ作成
+10. `frontend/static/resources/favicon.ico`ファイルを適当に作成して配置
+11. `frontend/default.conf`ファイル作成
 
     ```conf
     server {
@@ -64,7 +66,7 @@
     }
     ```
 
-10. frontendディレクトリ内に `Dockerfile` 作成
+12. frontendディレクトリ内に `Dockerfile` 作成
 
     ```Dockerfile
     FROM nginx:latest

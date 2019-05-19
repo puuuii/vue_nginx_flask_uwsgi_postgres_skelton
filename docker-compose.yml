@@ -4,6 +4,7 @@ services:
     image: postgres
     ports:
       - "5432:5432"
+    container_name: db
   uwsgi:
     build: ./backend
     volumes:
@@ -12,6 +13,7 @@ services:
       - "3031:3031"
     environment:
       TZ: "Asia/Tokyo"
+    container_name: uwsgi
   nginx:
     build: ./frontend
     volumes:
@@ -19,3 +21,6 @@ services:
       - ./frontend/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
+    depends_on:
+      - uwsgi
+    container_name: nginx
